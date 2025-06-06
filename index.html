@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Unified AR Experience</title>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <script>
+            // Sound handler for audio content
+            AFRAME.registerComponent('sound-handler', {
+                init: function() {
+                    const marker = this.el;
+                    const audio = document.querySelector('#' + this.el.getAttribute('sound-target'));
+                    audio.loop = true;
+                    
+                    marker.addEventListener('markerFound', function() {
+                        audio.play();
+                    });
+                    
+                    marker.addEventListener('markerLost', function() {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    });
+                }
+            });
+
+            // Video handler for video content
+            AFRAME.registerComponent('video-handler', {
+                init: function () {
+                    var marker = this.el;
+                    this.vid = document.querySelector('#' + this.el.getAttribute('video-target'));
+
+                    marker.addEventListener('markerFound', function () {
+                        this.vid.play();
+                    }.bind(this));
+
+                    marker.addEventListener('markerLost', function () {
+                        this.vid.pause();
+                    }.bind(this));
+                }
+            });
+        </script>
+    </head>
+
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            renderer="logarithmicDepthBuffer: true;"
+            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-assets>
+                <!-- Red Panda Assets -->
+                <a-asset-item id="redpanda-model" src="assets/redpanda/asset.glb"></a-asset-item>
+                <audio id="redpanda-sound" src="assets/redpanda/redpanda.mp3" preload="auto" loop></audio>
+
+                <!-- Buddha Park Assets -->
+                <video
+                    id="buddhapark-video"
+                    src="assets/buddhapark/BP.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    playsinline
+                ></video>
+
+                <!-- Samdruptse Assets -->
+                <video
+                    id="samdruptse-video"
+                    src="assets/samdruptse/Sam.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    playsinline
+                ></video>
+
+                <!-- Rabdentse Assets -->
+                <video
+                    id="rabdentse-video"
+                    src="assets/rabdentse/RB.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    playsinline
+                ></video>
+
+                <!-- Pemayangtse Assets -->
+                <video
+                    id="pemayangtse-video"
+                    src="assets/pemayangtse/PM.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    playsinline
+                ></video>
+            </a-assets>
+
+            <!-- Red Panda Marker -->
+            <a-marker
+                id="redpanda-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/redpanda/pattern-RP.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                sound-handler="sound-target: redpanda-sound"
+            >
+                <a-entity
+                    scale="1 1 1"
+                    animation-mixer="loop: repeat"
+                    gltf-model="#redpanda-model"
+                    class="clickable"
+                    gesture-handler
+                ></a-entity>
+            </a-marker>
+
+            <!-- Buddha Park Marker -->
+            <a-marker
+                id="buddhapark-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/buddhapark/pattern-BP.patt"
+                video-handler="video-target: buddhapark-video"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-video
+                    src="#buddhapark-video"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
+
+            <!-- Samdruptse Marker -->
+            <a-marker
+                id="samdruptse-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/samdruptse/pattern-SM.patt"
+                video-handler="video-target: samdruptse-video"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-video
+                    src="#samdruptse-video"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
+
+            <!-- Rabdentse Marker -->
+            <a-marker
+                id="rabdentse-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/rabdentse/pattern-RB.patt"
+                video-handler="video-target: rabdentse-video"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-video
+                    src="#rabdentse-video"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
+
+            <!-- Pemayangtse Marker -->
+            <a-marker
+                id="pemayangtse-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/pemayangtse/PM.patt"
+                video-handler="video-target: pemayangtse-video"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-video
+                    src="#pemayangtse-video"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
+
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
+</html> 
