@@ -7,51 +7,24 @@
         <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-       <script>
-            AFRAME.registerComponent('sound-handler', {
-                init: function() {
-                    const marker = this.el;
-                    const audio = document.querySelector('#panda-sound');
-                    
-                    // Set audio to loop
-                    audio.loop = true;
-                    
-                    marker.addEventListener('markerFound', function() {
-                        audio.play();
-                    });
-                    
-                    marker.addEventListener('markerLost', function() {
-                        audio.pause();
-                        audio.currentTime = 0;
-                    });
-                }
-            });
-        </script>
-        <script>
-           
-            // Video handler for video content
-             AFRAME.registerComponent('videohandler', {
-                init: function () {
-                    var marker = this.el;
-                    this.vid = document.querySelector("#vid");
-
-                    marker.addEventListener('markerFound', function () {
-                        this.toggle = true;
-                        this.vid.play();
-                    }.bind(this));
-
-                    marker.addEventListener('markerLost', function () {
-                        this.toggle = false;
-                        this.vid.pause();
-                    }.bind(this));
-                },
-                }
-            });
-        </script>
+        <!-- Import handlers -->
+        <script src="js/handlers/video-init.js"></script>
+        <script src="js/handlers/sound-handler.js"></script>
+        <script src="js/handlers/buddhapark-handler.js"></script>
+        <script src="js/handlers/samdruptse-handler.js"></script>
+        <script src="js/handlers/rabdentse-handler.js"></script>
+        <script src="js/handlers/pemayangtse-handler.js"></script>
+        <style>
+            .hidden {
+                display: none;
+            }
+        </style>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
-        
+        <div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999;">
+            Loading videos... Please wait.
+        </div>
         
         <a-scene
             vr-mode-ui="enabled: false;"
@@ -66,7 +39,7 @@
                 <!-- Red Panda Assets -->
                 <a-asset-item id="redpanda-model" src="assets/redpanda/asset.glb"></a-asset-item>
                 <audio id="panda-sound" src="assets/redpanda.mp3" preload="auto" loop></audio>
-            </a-assets>
+
                 <!-- Buddha Park Assets -->
                 <video
                     id="buddhapark-video"
@@ -74,10 +47,9 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    autoplay
                 ></video>
 
                 <!-- Samdruptse Assets -->
@@ -87,10 +59,9 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    autoplay
                 ></video>
 
                 <!-- Rabdentse Assets -->
@@ -100,10 +71,9 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    autoplay
                 ></video>
 
                 <!-- Pemayangtse Assets -->
@@ -113,10 +83,9 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    autoplay
                 ></video>
             </a-assets>
 
@@ -129,7 +98,7 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                soundhandler
+                sound-handler
             >
                 <a-entity
                     scale="1 1 1"
@@ -146,7 +115,7 @@
                 type="pattern"
                 preset="custom"
                 url="assets/buddhapark/pattern-BP.patt"
-                video-handler="video-target: buddhapark-video"
+                buddhapark-handler
                 smooth="true"
                 smoothCount="10"
                 smoothTolerance="0.01"
@@ -171,7 +140,7 @@
                 type="pattern"
                 preset="custom"
                 url="assets/samdruptse/pattern-SM.patt"
-                video-handler="video-target: samdruptse-video"
+                samdruptse-handler
                 smooth="true"
                 smoothCount="10"
                 smoothTolerance="0.01"
@@ -196,7 +165,7 @@
                 type="pattern"
                 preset="custom"
                 url="assets/rabdentse/pattern-RB.patt"
-                video-handler="video-target: rabdentse-video"
+                rabdentse-handler
                 smooth="true"
                 smoothCount="10"
                 smoothTolerance="0.01"
@@ -221,7 +190,7 @@
                 type="pattern"
                 preset="custom"
                 url="assets/pemayangtse/PM.patt"
-                video-handler="video-target: pemayangtse-video"
+                pemayangtse-handler
                 smooth="true"
                 smoothCount="10"
                 smoothTolerance="0.01"
@@ -243,6 +212,23 @@
             <a-entity camera></a-entity>
         </a-scene>
 
-       
+        <script>
+            // Hide loading screen when all videos are loaded
+            window.addEventListener('load', function() {
+                const videos = document.getElementsByTagName('video');
+                let loadedVideos = 0;
+                
+                function checkAllVideosLoaded() {
+                    loadedVideos++;
+                    if (loadedVideos === videos.length) {
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                }
+
+                for (let i = 0; i < videos.length; i++) {
+                    videos[i].addEventListener('loadeddata', checkAllVideosLoaded);
+                }
+            });
+        </script>
     </body>
 </html> 
