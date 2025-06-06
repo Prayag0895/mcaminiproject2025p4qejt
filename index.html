@@ -7,23 +7,28 @@
         <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-        <style>
-            .hidden {
-                display: none;
-            }
-        </style>
-        <script>
-            window.onload = function() {
-                const videos = document.getElementsByTagName('video');
-                for (let i = 0; i < videos.length; i++) {
-                    videos[i].playsInline = true;
-                    videos[i].crossOrigin = 'anonymous';
-                    videos[i].muted = false;
-                    videos[i].volume = 1.0;
-                    videos[i].load();
+       <script>
+            AFRAME.registerComponent('sound-handler', {
+                init: function() {
+                    const marker = this.el;
+                    const audio = document.querySelector('#panda-sound');
+                    
+                    // Set audio to loop
+                    audio.loop = true;
+                    
+                    marker.addEventListener('markerFound', function() {
+                        audio.play();
+                    });
+                    
+                    marker.addEventListener('markerLost', function() {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    });
                 }
-            };
-
+            });
+        </script>
+        <script>
+           
             // Video handler for video content
              AFRAME.registerComponent('videohandler', {
                 init: function () {
@@ -46,9 +51,7 @@
     </head>
 
     <body style="margin: 0; overflow: hidden;">
-        <div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999;">
-            Loading videos... Please wait.
-        </div>
+        
         
         <a-scene
             vr-mode-ui="enabled: false;"
@@ -125,6 +128,7 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
+                soundhandler
             >
                 <a-entity
                     scale="1 1 1"
@@ -238,23 +242,6 @@
             <a-entity camera></a-entity>
         </a-scene>
 
-        <script>
-            // Hide loading screen when all videos are loaded
-            window.addEventListener('load', function() {
-                const videos = document.getElementsByTagName('video');
-                let loadedVideos = 0;
-                
-                function checkAllVideosLoaded() {
-                    loadedVideos++;
-                    if (loadedVideos === videos.length) {
-                        document.getElementById('loading').style.display = 'none';
-                    }
-                }
-
-                for (let i = 0; i < videos.length; i++) {
-                    videos[i].addEventListener('loadeddata', checkAllVideosLoaded);
-                }
-            });
-        </script>
+       
     </body>
 </html> 
