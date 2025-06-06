@@ -6,25 +6,23 @@ AFRAME.registerComponent('sound-handler', {
         // Set up audio
         audio.preload = 'auto';
         audio.loop = true;
+        audio.volume = 1.0;
+        audio.muted = false;
         
-        marker.addEventListener('markerFound', function() {
-            // Try to play with both methods
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    audio.muted = false;
-                    audio.volume = 1.0;
-                    console.log('Red Panda audio playing');
-                })
-                .catch(error => {
-                    console.log('Audio play error:', error);
-                });
-            }
-        });
-        
-        marker.addEventListener('markerLost', function() {
-            audio.pause();
+        marker.addEventListener('markerFound', () => {
             audio.currentTime = 0;
+            audio.play();
         });
+        
+        marker.addEventListener('markerLost', () => {
+            audio.pause();
+        });
+
+        // Enable audio on first user interaction
+        document.addEventListener('click', () => {
+            audio.play().then(() => {
+                audio.pause();
+            }).catch(e => console.log('Audio setup error:', e));
+        }, { once: true });
     }
 }); 
