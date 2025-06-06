@@ -25,33 +25,21 @@
             };
 
             // Video handler for video content
-            AFRAME.registerComponent('video-handler', {
+             AFRAME.registerComponent('videohandler', {
                 init: function () {
                     var marker = this.el;
-                    this.vid = document.querySelector('#' + this.el.getAttribute('video-target'));
-                    
+                    this.vid = document.querySelector("#vid");
+
                     marker.addEventListener('markerFound', function () {
-                        this.vid.muted = false;
-                        this.vid.volume = 1.0;
-                        var playPromise = this.vid.play();
-                        if (playPromise !== undefined) {
-                            playPromise.then(_ => {
-                                console.log('Video playing with sound');
-                            })
-                            .catch(error => {
-                                console.log('Video play error:', error);
-                                // If autoplay with sound fails, try with mute first then unmute
-                                this.vid.muted = true;
-                                this.vid.play().then(() => {
-                                    this.vid.muted = false;
-                                });
-                            });
-                        }
+                        this.toggle = true;
+                        this.vid.play();
                     }.bind(this));
 
                     marker.addEventListener('markerLost', function () {
+                        this.toggle = false;
                         this.vid.pause();
                     }.bind(this));
+                },
                 }
             });
         </script>
@@ -82,9 +70,10 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin="anonymous"
+                    crossorigin
                     webkit-playsinline
                     playsinline
+                    autoplay
                 ></video>
 
                 <!-- Samdruptse Assets -->
@@ -94,9 +83,10 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin="anonymous"
+                    crossorigin
                     webkit-playsinline
                     playsinline
+                    autoplay
                 ></video>
 
                 <!-- Rabdentse Assets -->
@@ -106,9 +96,10 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin="anonymous"
+                    crossorigin
                     webkit-playsinline
                     playsinline
+                    autoplay
                 ></video>
 
                 <!-- Pemayangtse Assets -->
@@ -118,9 +109,10 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin="anonymous"
+                    crossorigin
                     webkit-playsinline
                     playsinline
+                    autoplay
                 ></video>
             </a-assets>
 
