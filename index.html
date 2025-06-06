@@ -8,6 +8,20 @@
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
         <script>
+            window.onload = function() {
+                // Get all video elements
+                const videos = document.getElementsByTagName('video');
+                for (let i = 0; i < videos.length; i++) {
+                    // Set video properties
+                    videos[i].muted = true;
+                    videos[i].playsInline = true;
+                    videos[i].crossOrigin = 'anonymous';
+                    
+                    // Try to load the video
+                    videos[i].load();
+                }
+            };
+
             // Sound handler for audio content
             AFRAME.registerComponent('sound-handler', {
                 init: function() {
@@ -31,9 +45,22 @@
                 init: function () {
                     var marker = this.el;
                     this.vid = document.querySelector('#' + this.el.getAttribute('video-target'));
-
+                    
+                    // Ensure video is muted and ready to play
+                    this.vid.muted = true;
+                    this.vid.playsInline = true;
+                    
                     marker.addEventListener('markerFound', function () {
-                        this.vid.play();
+                        // Try to play with both methods
+                        var playPromise = this.vid.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(_ => {
+                                console.log('Video playing');
+                            })
+                            .catch(error => {
+                                console.log('Video play error:', error);
+                            });
+                        }
                     }.bind(this));
 
                     marker.addEventListener('markerLost', function () {
@@ -42,9 +69,18 @@
                 }
             });
         </script>
+        <style>
+            .hidden {
+                display: none;
+            }
+        </style>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
+        <div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999;">
+            Loading videos... Please wait.
+        </div>
+        
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
@@ -66,9 +102,11 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
+                    muted
+                    autoplay
                 ></video>
 
                 <!-- Samdruptse Assets -->
@@ -78,9 +116,11 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
+                    muted
+                    autoplay
                 ></video>
 
                 <!-- Rabdentse Assets -->
@@ -90,9 +130,11 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
+                    muted
+                    autoplay
                 ></video>
 
                 <!-- Pemayangtse Assets -->
@@ -102,9 +144,11 @@
                     preload="auto"
                     response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
+                    muted
+                    autoplay
                 ></video>
             </a-assets>
 
@@ -150,6 +194,7 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
+                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -175,6 +220,7 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
+                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -200,6 +246,7 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
+                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -208,7 +255,7 @@
                 id="pemayangtse-marker"
                 type="pattern"
                 preset="custom"
-                url="assets/pemayangtse/marker.patt"
+                url="assets/pemayangtse/PM.patt"
                 video-handler="video-target: pemayangtse-video"
                 smooth="true"
                 smoothCount="10"
@@ -225,10 +272,30 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
+                    play="true"
                 ></a-video>
             </a-marker>
 
             <a-entity camera></a-entity>
         </a-scene>
+
+        <script>
+            // Hide loading screen when all videos are loaded
+            window.addEventListener('load', function() {
+                const videos = document.getElementsByTagName('video');
+                let loadedVideos = 0;
+                
+                function checkAllVideosLoaded() {
+                    loadedVideos++;
+                    if (loadedVideos === videos.length) {
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                }
+
+                for (let i = 0; i < videos.length; i++) {
+                    videos[i].addEventListener('loadeddata', checkAllVideosLoaded);
+                }
+            });
+        </script>
     </body>
 </html> 
