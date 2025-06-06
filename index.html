@@ -7,38 +7,22 @@
         <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <style>
+            .hidden {
+                display: none;
+            }
+        </style>
         <script>
             window.onload = function() {
-                // Get all video elements
                 const videos = document.getElementsByTagName('video');
                 for (let i = 0; i < videos.length; i++) {
-                    // Set video properties
-                    videos[i].muted = true;
                     videos[i].playsInline = true;
                     videos[i].crossOrigin = 'anonymous';
-                    
-                    // Try to load the video
+                    videos[i].muted = false;
+                    videos[i].volume = 1.0;
                     videos[i].load();
                 }
             };
-
-            // Sound handler for audio content
-            AFRAME.registerComponent('sound-handler', {
-                init: function() {
-                    const marker = this.el;
-                    const audio = document.querySelector('#' + this.el.getAttribute('sound-target'));
-                    audio.loop = true;
-                    
-                    marker.addEventListener('markerFound', function() {
-                        audio.play();
-                    });
-                    
-                    marker.addEventListener('markerLost', function() {
-                        audio.pause();
-                        audio.currentTime = 0;
-                    });
-                }
-            });
 
             // Video handler for video content
             AFRAME.registerComponent('video-handler', {
@@ -46,19 +30,21 @@
                     var marker = this.el;
                     this.vid = document.querySelector('#' + this.el.getAttribute('video-target'));
                     
-                    // Ensure video is muted and ready to play
-                    this.vid.muted = true;
-                    this.vid.playsInline = true;
-                    
                     marker.addEventListener('markerFound', function () {
-                        // Try to play with both methods
+                        this.vid.muted = false;
+                        this.vid.volume = 1.0;
                         var playPromise = this.vid.play();
                         if (playPromise !== undefined) {
                             playPromise.then(_ => {
-                                console.log('Video playing');
+                                console.log('Video playing with sound');
                             })
                             .catch(error => {
                                 console.log('Video play error:', error);
+                                // If autoplay with sound fails, try with mute first then unmute
+                                this.vid.muted = true;
+                                this.vid.play().then(() => {
+                                    this.vid.muted = false;
+                                });
                             });
                         }
                     }.bind(this));
@@ -69,11 +55,6 @@
                 }
             });
         </script>
-        <style>
-            .hidden {
-                display: none;
-            }
-        </style>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
@@ -93,7 +74,6 @@
             <a-assets>
                 <!-- Red Panda Assets -->
                 <a-asset-item id="redpanda-model" src="assets/redpanda/asset.glb"></a-asset-item>
-                <audio id="redpanda-sound" src="assets/redpanda/redpanda.mp3" preload="auto" loop></audio>
 
                 <!-- Buddha Park Assets -->
                 <video
@@ -105,8 +85,6 @@
                     crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    muted
-                    autoplay
                 ></video>
 
                 <!-- Samdruptse Assets -->
@@ -119,8 +97,6 @@
                     crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    muted
-                    autoplay
                 ></video>
 
                 <!-- Rabdentse Assets -->
@@ -133,8 +109,6 @@
                     crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    muted
-                    autoplay
                 ></video>
 
                 <!-- Pemayangtse Assets -->
@@ -147,8 +121,6 @@
                     crossorigin="anonymous"
                     webkit-playsinline
                     playsinline
-                    muted
-                    autoplay
                 ></video>
             </a-assets>
 
@@ -161,7 +133,6 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                sound-handler="sound-target: redpanda-sound"
             >
                 <a-entity
                     scale="1 1 1"
@@ -194,7 +165,6 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
-                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -220,7 +190,6 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
-                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -246,7 +215,6 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
-                    play="true"
                 ></a-video>
             </a-marker>
 
@@ -272,7 +240,6 @@
                     rotation="-90 0 0"
                     class="clickable"
                     gesture-handler
-                    play="true"
                 ></a-video>
             </a-marker>
 
